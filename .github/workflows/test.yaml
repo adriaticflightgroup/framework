@@ -35,4 +35,4 @@ jobs:
         max_attempts: 5
         command: composer update --prefer-dist --no-interaction --no-progress
     - name: Run Tests
-      run: vendor/bin/phpunit --display-deprecation --fail-on-deprecation
+      run: vendor/bin/phpunit --display-deprecations --fail-on-deprecation

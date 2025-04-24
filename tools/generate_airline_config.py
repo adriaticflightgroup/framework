@@ -22,7 +22,7 @@ def main():
     if args.modulo > 1000:
         modulo = args.modulo
     else:
-        modulo = 57024 - args.modulo + 1
+        modulo = 80784 - args.modulo + 1
 
     multipliers = find_valid_multipliers(modulo, args.count)
 

@@ -13,12 +13,15 @@ namespace AdriaticFlightGroup\Encoding;
  */
 class Encoding
 {
-    private string $firstCharset = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-    private string $lastCharset = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    private const FIRST_CHARSET = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    private const LAST_CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
     public const MAX_FLIGHT_NUMBER = 15000;
+    private int $maxFlightNumber;
     private int $multiplier;
     private int $modulo;
     private int $modInverse;
+    private string $firstCharset;
+    private string $lastCharset;
 
     /*
      * Configs for each airline.
@@ -40,7 +43,7 @@ class Encoding
          */
         'JP' => [
             'multiplier' => 2744,
-            'modulo' => self::MAX_FLIGHT_NUMBER - 100 + 1,
+            'modulo' => 14901,
         ],
     ];
 
@@ -64,14 +67,22 @@ class Encoding
             throw new \InvalidArgumentException("Invalid configuration: multiplier and modulo are required");
         }
 
+        if (isset($config['maxFlightNumber']) && $config['maxFlightNumber'] > self::MAX_FLIGHT_NUMBER) {
+            throw new \InvalidArgumentException("Invalid configuration: maxFlightNumber must be less than " . self::MAX_FLIGHT_NUMBER);
+        }
+
         $this->multiplier = $config['multiplier'];
-        $this->modulo = $config['modulo'];
+        $this->firstCharset = $config['firstCharset'] ?? self::FIRST_CHARSET;
+        $this->lastCharset = $config['lastCharset'] ?? self::LAST_CHARSET;
+        $this->maxFlightNumber = $config['maxFlightNumber'] ?? self::MAX_FLIGHT_NUMBER;
+        $this->modulo = $config['modulo'] ?? $this->maxFlightNumber;
+
         $this->modInverse = self::modInverse($this->multiplier, $this->modulo);
     }
 
     private function getMinFlightNumber(): int
     {
-        return self::MAX_FLIGHT_NUMBER - $this->modulo + 1;
+        return $this->maxFlightNumber - $this->modulo + 1;
     }
 
     private static function modInverse(int $multiplier, int $modulo): int {
@@ -91,8 +102,8 @@ class Encoding
     }
 
     public function encodeFlightNumber(int $flightNumber): string {
-        if ($flightNumber < 1 || $flightNumber > self::MAX_FLIGHT_NUMBER) {
-            throw new \InvalidArgumentException("Flight number must be between 1 and " . self::MAX_FLIGHT_NUMBER);
+        if ($flightNumber < 1 || $flightNumber > $this->maxFlightNumber) {
+            throw new \InvalidArgumentException("Flight number must be between 1 and " . $this->maxFlightNumber);
         }
 
         $firstCharset = $this->firstCharset;

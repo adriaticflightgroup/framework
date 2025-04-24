@@ -130,4 +130,40 @@ class EncodingTest extends TestCase
             $this->assertEquals($flightNumber, $decoded);
         }
     }
+
+    public function testCustomAirlineConfigWithCharset()
+    {
+        $a2 = new Encoding([
+            'multiplier' => 9016,
+            'modulo' => 9999,
+            'firstCharset' => '0123456789',
+            'lastCharset' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            'maxFlightNumber' => 9999
+        ]);
+
+        $tests = [
+            110  => '119I',
+            111  => '81N',
+            112  => '43S',
+            113  => '390M',
+            114  => '352R',
+            115  => '314W',
+            9958 => '59Q',
+            9959 => '21V',
+            9960 => '368P',
+            9961 => '330U',
+            9962 => '292Z',
+            9963 => '255E',
+            9964 => '217J',
+            9965 => '179O',
+        ];
+
+        foreach ($tests as $flightNumber => $expectedCode) {
+            $encoded = $a2->encodeFlightNumber($flightNumber);
+            $this->assertEquals($expectedCode, $encoded);
+
+            $decoded = $a2->decodeCode($encoded);
+            $this->assertEquals($flightNumber, $decoded);
+        }
+    }
 }

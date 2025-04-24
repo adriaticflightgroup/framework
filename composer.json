@@ -1,0 +1,26 @@
+{
+    "name": "adriaticflightgroup/framework",
+    "description": "Framework for the Adriatic Flight Group tools",
+    "type": "library",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "AdriaticFlightGroup\\": "src/AdriaticFlightGroup/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Daniel Hawton",
+            "email": "daniel@hawton.org"
+        }
+    ],
+    "require": {
+        "php": "^8.4"
+    },
+    "replace": {
+        "adriaticflightgroup/encoding": "self.version"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12"
+    }
+}

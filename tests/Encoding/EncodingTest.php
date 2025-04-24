@@ -102,7 +102,7 @@ class EncodingTest extends TestCase
     {
         $a2 = new Encoding([
             'multiplier' => 6131,
-            'modulo' => 15000,
+            'modulo' => Encoding::MAX_FLIGHT_NUMBER,
         ]);
 
         $tests = [

@@ -18,20 +18,21 @@ class EncodingTest extends TestCase
     public function testKnownJPEncodings()
     {
         $testCases = [
-            110 => '5JQ',
-            111 => '12SB',
-            112 => '2VA',
-            113 => '10CM',
-            114 => '17KY',
-            115 => '7NX',
-            9958 => '3HU',
-            9959 => '10RF',
-            9960 => '17YS',
-            9961 => '8BR',
-            9962 => '15KC',
-            9963 => '5NB',
-            9964 => '12VN',
-            9965 => '2YM',
+            110 => '74CQ',
+            111 => '81LB',
+            112 => '88TN',
+            113 => '96AZ',
+            114 => '4NP',
+            115 => '11WA',
+            9958 => '24VK',
+            9959 => '32CW',
+            9960 => '39LH',
+            9961 => '46TU',
+            9962 => '54BF',
+            9963 => '61JS',
+            9964 => '68SD',
+            9965 => '75ZQ',
+            15212 => '90FZ',
         ];
 
         foreach ($testCases as $flightNumber => $expectedCode) {
@@ -46,19 +47,20 @@ class EncodingTest extends TestCase
     public function testFlightNumberTooLow()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Flight number must be between 1 and 9999');
+        $this->expectExceptionMessage('Flight number must be between 1 and ' . Encoding::MAX_FLIGHT_NUMBER);
         $this->encoding->encodeFlightNumber(0);
     }
 
     public function testFlightNumberTooHigh()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Flight number must be between 1 and 9999');
-        $this->encoding->encodeFlightNumber(10000);
+        $this->expectExceptionMessage('Flight number must be between 1 and ' . Encoding::MAX_FLIGHT_NUMBER);
+        $this->encoding->encodeFlightNumber(Encoding::MAX_FLIGHT_NUMBER + 1);
     }
 
     public function testFlightNumberBelowMinimum()
     {
+        // Hard coded because we know JP cannot have a flight number below 100
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Flight number is too low: 1');
         $this->encoding->encodeFlightNumber(1);
@@ -84,6 +86,7 @@ class EncodingTest extends TestCase
             ['multiplier' => 4211, 'modulo' => 9900, 'expectedModInverse' => 7991],
             ['multiplier' => 7127, 'modulo' => 9999, 'expectedModInverse' => 8018],
             ['multiplier' => 1234, 'modulo' => 9999, 'expectedModInverse' => 5275],
+            ['multiplier' => 43427, 'modulo' => 57024, 'expectedModInverse' => 53195],
         ];
 
         $ref = new \ReflectionClass(Encoding::class);
@@ -93,6 +96,40 @@ class EncodingTest extends TestCase
         foreach ($configs as $config) {
             $modInverse = $method->invoke(null, $config['multiplier'], $config['modulo']);
             $this->assertEquals($config['expectedModInverse'], $modInverse, "Failed for multiplier: {$config['multiplier']} and modulo: {$config['modulo']}");
+        }
+    }
+
+    public function testCustomAirlineConfig()
+    {
+        $a2 = new Encoding([
+            'multiplier' => 43427,
+            'modulo' => 57024,
+        ]);
+
+        $tests = [
+            110 => '1YZ',
+            111 => '77JL',
+            112 => '53TX',
+            113 => '30DJ',
+            114 => '6NV',
+            115 => '81YG',
+            9958 => '82AR',
+            9959 => '58LC',
+            9960 => '34VP',
+            9961 => '11FA',
+            9962 => '86QM',
+            9963 => '62ZY',
+            9964 => '39KK',
+            9965 => '15UW',
+            15212 => '4QT',
+        ];
+
+        foreach ($tests as $flightNumber => $expectedCode) {
+            $encoded = $a2->encodeFlightNumber($flightNumber);
+            $this->assertEquals($expectedCode, $encoded);
+
+            $decoded = $a2->decodeCode($encoded);
+            $this->assertEquals($flightNumber, $decoded);
         }
     }
 }

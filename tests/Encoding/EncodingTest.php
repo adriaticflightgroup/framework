@@ -18,9 +18,20 @@ class EncodingTest extends TestCase
     public function testKnownJPEncodings()
     {
         $testCases = [
-            100 => '1AA',
-            9423 => '10VP',
-            9949 => '6GR',
+            110 => '5JQ',
+            111 => '12SB',
+            112 => '2VA',
+            113 => '10CM',
+            114 => '17KY',
+            115 => '7NX',
+            9958 => '3HU',
+            9959 => '10RF',
+            9960 => '17YS',
+            9961 => '8BR',
+            9962 => '15KC',
+            9963 => '5NB',
+            9964 => '12VN',
+            9965 => '2YM',
         ];
 
         foreach ($testCases as $flightNumber => $expectedCode) {

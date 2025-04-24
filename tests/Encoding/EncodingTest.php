@@ -18,21 +18,20 @@ class EncodingTest extends TestCase
     public function testKnownJPEncodings()
     {
         $testCases = [
-            110 => '74CQ',
-            111 => '81LB',
-            112 => '88TN',
-            113 => '96AZ',
-            114 => '4NP',
-            115 => '11WA',
-            9958 => '24VK',
-            9959 => '32CW',
-            9960 => '39LH',
-            9961 => '46TU',
-            9962 => '54BF',
-            9963 => '61JS',
-            9964 => '68SD',
-            9965 => '75ZQ',
-            15212 => '90FZ',
+            110 => '16CM',
+            111 => '1FY',
+            112 => '4UG',
+            113 => '86Q',
+            114 => '11JY',
+            115 => '14XG',
+            9958 => '75X',
+            9959 => '10JF',
+            9960 => '13WP',
+            9961 => '178X',
+            9962 => '2CJ',
+            9963 => '5QS',
+            9964 => '93A',
+            9965 => '12FJ',
         ];
 
         foreach ($testCases as $flightNumber => $expectedCode) {
@@ -102,26 +101,25 @@ class EncodingTest extends TestCase
     public function testCustomAirlineConfig()
     {
         $a2 = new Encoding([
-            'multiplier' => 43427,
-            'modulo' => 57024,
+            'multiplier' => 6131,
+            'modulo' => Encoding::MAX_FLIGHT_NUMBER,
         ]);
 
         $tests = [
-            110 => '1YZ',
-            111 => '77JL',
-            112 => '53TX',
-            113 => '30DJ',
-            114 => '6NV',
-            115 => '81YG',
-            9958 => '82AR',
-            9959 => '58LC',
-            9960 => '34VP',
-            9961 => '11FA',
-            9962 => '86QM',
-            9963 => '62ZY',
-            9964 => '39KK',
-            9965 => '15UW',
-            15212 => '4QT',
+            110 => '114Z',
+            111 => '18NL',
+            112 => '7SX',
+            113 => '15AJ',
+            114 => '4EV',
+            115 => '11YG',
+            9958 => '14XR',
+            9959 => '42C',
+            9960 => '11KP',
+            9961 => '193A',
+            9962 => '87M',
+            9963 => '15QY',
+            9964 => '4VK',
+            9965 => '12CW',
         ];
 
         foreach ($tests as $flightNumber => $expectedCode) {

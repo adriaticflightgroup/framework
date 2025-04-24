@@ -13,8 +13,9 @@ namespace AdriaticFlightGroup\Encoding;
  */
 class Encoding
 {
-    private string $charset = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-    public const MAX_FLIGHT_NUMBER = 57024;
+    private string $firstCharset = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    private string $lastCharset = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    public const MAX_FLIGHT_NUMBER = 15000;
     private int $multiplier;
     private int $modulo;
     private int $modInverse;
@@ -38,7 +39,7 @@ class Encoding
          * Adria Airways
          */
         'JP' => [
-            'multiplier' => 4211,
+            'multiplier' => 2744,
             'modulo' => self::MAX_FLIGHT_NUMBER - 100 + 1,
         ],
     ];
@@ -94,8 +95,11 @@ class Encoding
             throw new \InvalidArgumentException("Flight number must be between 1 and " . self::MAX_FLIGHT_NUMBER);
         }
 
-        $charset = $this->charset;
-        $base = strlen($charset);
+        $firstCharset = $this->firstCharset;
+        $lastCharset = $this->lastCharset;
+        $base1 = strlen($firstCharset);
+        $base2 = strlen($lastCharset);
+        $suffixTotal = $base1 * $base2;
 
         $minFlightNumber = $this->getMinFlightNumber();
         if ($flightNumber < $minFlightNumber) {
@@ -104,23 +108,24 @@ class Encoding
         $index = $flightNumber - $minFlightNumber;
         $scrambled = ($index * $this->multiplier) % $this->modulo;
 
-        $suffixTotal = $base * $base;
         $prefix = intdiv($scrambled, $suffixTotal) + 1;
         $suffixIndex = $scrambled % $suffixTotal;
 
-        $firstChar = $charset[intdiv($suffixIndex, $base)];
-        $secondChar = $charset[$suffixIndex % $base];
+        $firstChar = $firstCharset[intdiv($suffixIndex, $base2)];
+        $secondChar = $lastCharset[$suffixIndex % $base2];
 
         return $prefix . $firstChar . $secondChar;
     }
 
     public function decodeCode(string $code): int
     {
-        $charset = $this->charset;
-        $base = strlen($charset);
-        $suffixTotal = $base * $base;
+        $firstCharset = $this->firstCharset;
+        $lastCharset = $this->lastCharset;
+        $base1 = strlen($firstCharset);
+        $base2 = strlen($lastCharset);
+        $suffixTotal = $base1 * $base2;
 
-        if (!preg_match('/^(\d{1,2})([A-Z]{2})$/', $code, $matches)) {
+        if (!preg_match('/^(\d{1,2})([A-Z0-9][A-Z])$/', $code, $matches)) {
             throw new \InvalidArgumentException("Invalid code format: $code");
         }
 
@@ -128,14 +133,14 @@ class Encoding
         $firstChar = $matches[2][0];
         $secondChar = $matches[2][1];
 
-        $i1 = strpos($charset, $firstChar);
-        $i2 = strpos($charset, $secondChar);
+        $i1 = strpos($firstCharset, $firstChar);
+        $i2 = strpos($lastCharset, $secondChar);
 
         if ($i1 === false || $i2 === false) {
             throw new \InvalidArgumentException("Invalid characters in suffix: $firstChar$secondChar");
         }
 
-        $suffixIndex = $i1 * $base + $i2;
+        $suffixIndex = $i1 * $base2 + $i2;
         $scrambled = ($prefix - 1) * $suffixTotal + $suffixIndex;
 
         $index = ($scrambled * $this->modInverse) % $this->modulo;

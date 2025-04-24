@@ -1,0 +1,18 @@
+{
+    "name": "adriaticflightgroup/encoding",
+    "require": {
+        "php": "^8.2"
+    },
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "Adriaticflightgroup\\Encoding\\": ""
+        }
+    },
+    "authors": [
+        {
+            "name": "Daniel Hawton",
+            "email": "daniel@hawton.org"
+        }
+    ]
+}

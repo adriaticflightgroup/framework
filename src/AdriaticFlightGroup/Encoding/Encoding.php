@@ -14,6 +14,7 @@ namespace AdriaticFlightGroup\Encoding;
 class Encoding
 {
     private string $charset = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    public const MAX_FLIGHT_NUMBER = 57024;
     private int $multiplier;
     private int $modulo;
     private int $modInverse;
@@ -38,7 +39,7 @@ class Encoding
          */
         'JP' => [
             'multiplier' => 4211,
-            'modulo' => 9900, // 9999 - (min flight number) + 1
+            'modulo' => self::MAX_FLIGHT_NUMBER - 100 + 1,
         ],
     ];
 
@@ -69,7 +70,7 @@ class Encoding
 
     private function getMinFlightNumber(): int
     {
-        return 9999 - $this->modulo + 1;
+        return self::MAX_FLIGHT_NUMBER - $this->modulo + 1;
     }
 
     private static function modInverse(int $multiplier, int $modulo): int {
@@ -89,8 +90,8 @@ class Encoding
     }
 
     public function encodeFlightNumber(int $flightNumber): string {
-        if ($flightNumber < 1 || $flightNumber > 9999) {
-            throw new \InvalidArgumentException("Flight number must be between 1 and 9999");
+        if ($flightNumber < 1 || $flightNumber > self::MAX_FLIGHT_NUMBER) {
+            throw new \InvalidArgumentException("Flight number must be between 1 and " . self::MAX_FLIGHT_NUMBER);
         }
 
         $charset = $this->charset;
